@@ -2,7 +2,7 @@
 #-----------------------------------------------------------#
 ##                                                         ##
 ## Author: Ankit Vashistha                                 ##
-## Script: monitorResources v1.0                           ##
+## Script: monitorResources v2.0                           ##
 ##                                                         ##
 #-----------------------------------------------------------#
 
@@ -55,11 +55,28 @@ item_disk () {
 }
 
 
+# Check Top Memory Consuming Process
+item_top_mem() {
+    top_proc=$(ps -eocomm,pmem | egrep -v '(0.0)|(%MEM)'|head -1)
+    fmt_top_proc=$(echo $top_proc|sed 's/ /:/g')
+    echo "$1:TOP_PROC_BY_MEM:$fmt_top_proc"
+}
+
+
+item_top_cpu() {
+    top_proc=$(ps -eocomm,pcpu | egrep -v '(0.0)|(%CPU)'|head -1)
+    fmt_top_proc=$(echo $top_proc|sed 's/ /:/g')
+    echo "$1:TOP_PROC_BY_CPU:$fmt_top_proc"
+}
+
+
 ## Main
 CT=`date +'%d-%m-%Y %H:%M:%S %Z'`
 item_cpu "$CT"
 item_mem "$CT"
 item_disk "$CT"
+item_top_mem "$CT"
+item_top_cpu "$CT"
 
 ## Remove temp file
 rm -f $TMP_FILE
