@@ -6,8 +6,6 @@
 ##                                                         ##
 #-----------------------------------------------------------#
 
-# Temp File
-TMP_FILE="/tmp/diskCheckOUT"
 
 ## Define Thresholds
 cpu_warn='85'   # CPU
@@ -42,16 +40,16 @@ item_mem () {
 
 # Check Disk Utilization
 item_disk () {
-    df -P | grep /dev | grep -v -E '(tmp|boot)' | awk '{print $1 ":" $5}' | cut -f 1 -d "%" >> $TMP_FILE
-    while IFS=":" read MOUNT COUNT
+df -h | grep -vE '^Filesystem|tmp|boot' | awk '{ print $5 " " $1 }' | while read MOUNT;
     do
-        if [ $COUNT -gt $disk_warn ]
-        then
-            echo "$1:DISK_Warning:$MOUNT:$COUNT"
+        disk_use=$(echo $MOUNT | awk '{ print $1}' | cut -d'%' -f1  )
+        partition=$(echo $MOUNT | awk '{ print $2 }' )
+        if [ $disk_use -gt $disk_warn ]; then
+            echo "$1:DISK_Warning:$MOUNT:$usep%"
         else
-            echo "$1:DISK_OK:$MOUNT:$COUNT"
+            echo "$1:DISK_OK:$MOUNT:$usep%"
         fi
-    done<$TMP_FILE
+    done
 }
 
 
@@ -77,6 +75,3 @@ item_mem "$CT"
 item_disk "$CT"
 item_top_mem "$CT"
 item_top_cpu "$CT"
-
-## Remove temp file
-rm -f $TMP_FILE
