@@ -45,9 +45,9 @@ df -h | grep -vE '^Filesystem|tmp|boot' | awk '{ print $5 " " $1 }' | while read
         disk_use=$(echo $MOUNT | awk '{ print $1}' | cut -d'%' -f1  )
         partition=$(echo $MOUNT | awk '{ print $2 }' )
         if [ $disk_use -gt $disk_warn ]; then
-            echo "$1:DISK_Warning:$MOUNT:$usep%"
+            echo "$1:DISK_Warning:$MOUNT:$disk_use%"
         else
-            echo "$1:DISK_OK:$MOUNT:$usep%"
+            echo "$1:DISK_OK:$MOUNT:$disk_use%"
         fi
     done
 }
